@@ -80,7 +80,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private static StatusModule module;
     private ReactApplicationContext reactContext;
     private boolean rootedDevice;
-    private NewMessageSignalHandler newMessageSignalHandler;
     private boolean background;
 
     StatusModule(ReactApplicationContext reactContext, boolean rootedDevice) {
@@ -110,19 +109,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @Override
     public void onHostDestroy() {
         Log.d(TAG, "******************* ON HOST DESTROY *************************");
-    }
-
-    @ReactMethod
-    public void enableNotifications() {
-        this.newMessageSignalHandler = new NewMessageSignalHandler(reactContext);
-    }
-
-    @ReactMethod
-    public void disableNotifications() {
-        if (newMessageSignalHandler != null) {
-            newMessageSignalHandler.stop();
-            newMessageSignalHandler = null;
-        }
     }
 
     private boolean checkAvailability() {
@@ -157,13 +143,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             final JSONObject jsonEvent = new JSONObject(jsonEventString);
             String eventType = jsonEvent.getString("type");
             Log.d(TAG, "Signal event: " + jsonEventString);
-            // NOTE: the newMessageSignalHandler is only instanciated if the user
-            // enabled notifications in the app
-            if (this.background && newMessageSignalHandler != null) {
-                if (eventType.equals("messages.new")) {
-                    newMessageSignalHandler.handleNewMessageSignal(jsonEvent);
-                }
-            }
 
             if(eventType.equals("local-notifications")) {
                 Context ctx = this.getReactApplicationContext();
@@ -442,7 +421,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void logout() {
         Log.d(TAG, "logout");
-        disableNotifications();
         String result = Statusgo.logout();
         if (result.startsWith("{\"error\":\"\"")) {
             Log.d(TAG, "Logout result: " + result);
