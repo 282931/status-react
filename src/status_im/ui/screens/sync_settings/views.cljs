@@ -29,7 +29,7 @@
                                              (i18n/label :t/mobile-network-use-wifi))}]
       [quo/list-item {:size                :small
                       :accessibility-label :offline-messages-settings-button
-                      :title               (i18n/label :t/history-nodes)
+                      :title               (i18n/label :t/status-nodes)
                       :on-press            #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
                       :accessory           :text
                       :accessory-text      (when use-mailservers?
