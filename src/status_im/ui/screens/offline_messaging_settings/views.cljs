@@ -52,7 +52,7 @@
                   {:keys [use-mailservers?]} [:multiaccount]]
     [react/view {:style styles/wrapper}
      [topbar/topbar
-      {:title (i18n/label :t/history-nodes)
+      {:title (i18n/label :t/status-nodes)
        ;; Navigate to profile as we might be coming from home to this view
        :navigation {:on-press #(re-frame/dispatch [:navigate-to :profile-stack {:screen :sync-settings}])}
        :right-accessories
@@ -62,7 +62,7 @@
      [react/scroll-view
       [react/view {:style styles/switch-container}
        [profile.components/settings-switch-item
-        {:label-kw  :t/offline-messaging-use-history-nodes
+        {:label-kw  :t/offline-messaging-use-status-nodes
          :value     use-mailservers?
          :action-fn #(re-frame/dispatch [:mailserver.ui/use-history-switch-pressed (not use-mailservers?)])}]]
       [react/view {:style styles/use-history-explanation-text-container}
@@ -73,8 +73,8 @@
         [:<>
          [pinned-state preferred-mailserver-id]
 
-         [react/text {:style styles/history-nodes-label}
-          (i18n/label :t/history-nodes)]
+         [react/text {:style styles/status-nodes-label}
+          (i18n/label :t/status-nodes)]
          [list/flat-list {:data               (vals mailservers)
                           :default-separator? false
                           :key-fn             :name
