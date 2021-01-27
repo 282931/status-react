@@ -471,7 +471,7 @@
     :help-center
     :hide-content-when-switching-apps
     :history
-    :history-nodes
+    :status-nodes
     :hold-card
     :home
     :hooks
