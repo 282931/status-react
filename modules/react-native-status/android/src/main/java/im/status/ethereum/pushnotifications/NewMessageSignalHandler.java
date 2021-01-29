@@ -265,7 +265,7 @@ public class NewMessageSignalHandler {
 
     private void upsertChat(Bundle data) {
         String id = data.getString("chatId");
-        int type = data.getInt("chatType");
+        int type = Integer.parseInt(data.getString("chatType"));
         StatusChat chat = chats.get(id);
 
         // if the chat was not already there, we create one

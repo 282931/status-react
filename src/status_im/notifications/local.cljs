@@ -148,7 +148,7 @@
                                  "#")
                                (get chat :name)))))]
      {:type             "message"
-      :chatType         (get chat :chatType)
+      :chatType         (str (get chat :chatType))
       :from             title
       :chatId           chat-id
       :alias            title
