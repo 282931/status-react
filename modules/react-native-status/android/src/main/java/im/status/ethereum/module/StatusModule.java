@@ -140,21 +140,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     public void handleSignal(final String jsonEventString) {
         try {
-            final JSONObject jsonEvent = new JSONObject(jsonEventString);
-            String eventType = jsonEvent.getString("type");
-            Log.d(TAG, "Signal event: " + jsonEventString);
-
-            if(eventType.equals("local-notifications")) {
-                Context ctx = this.getReactApplicationContext();
-                Intent intent = new Intent(ctx, LocalNotificationsService.class);
-                Bundle bundle = new Bundle();
-
-                bundle.putString("event", jsonEventString);
-                intent.putExtras(bundle);
-
-                ctx.startService(intent);
-            }
-
+            Log.d(TAG, "Signal event");
             WritableMap params = Arguments.createMap();
             params.putString("jsonEvent", jsonEventString);
             this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);

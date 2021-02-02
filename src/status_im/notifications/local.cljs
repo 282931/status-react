@@ -172,17 +172,18 @@
  (fn [evt]
    (-> evt create-notification local-push-ios)))
 
-(fx/defn process
-  [_ evt]
-  (when platform/ios?
-    {::local-push-ios evt}))
-
 (fx/defn local-notification-android
   {:events [::local-notification-android]}
   [cofx event]
   (some->> event
            (create-notification cofx)
            local-push-android))
+
+(fx/defn process
+  [cofx evt]
+  (if platform/ios?
+    {::local-push-ios evt}
+    (local-notification-android cofx evt)))
 
 (defn handle []
   (fn [^js message]
