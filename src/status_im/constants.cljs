@@ -30,6 +30,8 @@
 (def timeline-chat-type 5)
 (def community-chat-type 6)
 
+(def request-to-join-pending-state 1)
+
 (def reactions {emoji-reaction-love        (:love resources/reactions)
                 emoji-reaction-thumbs-up   (:thumbs-up resources/reactions)
                 emoji-reaction-thumbs-down (:thumbs-down resources/reactions)

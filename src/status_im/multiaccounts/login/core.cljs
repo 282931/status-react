@@ -35,6 +35,7 @@
 (re-frame/reg-fx
  ::login
  (fn [[key-uid account-data hashed-password]]
+   (println "HASHED" hashed-password)
    (status/login key-uid account-data hashed-password)))
 
 (re-frame/reg-fx

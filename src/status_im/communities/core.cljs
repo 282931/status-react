@@ -384,3 +384,22 @@
 
 (defn fetch-requests-to-join! [community-id]
   (re-frame/dispatch [::fetch-requests-to-join community-id]))
+
+(fx/defn request-to-join-accepted
+  {:events [::request-to-join-accepted]}
+  [{:keys [db] :as cofx} community-id request-id response]
+  (log/debug "communit-id" community-id)
+  (log/debug "request-id" request-id)
+  (log/debug "response" response)
+  (fx/merge cofx
+            {:db (update-in db [:communities/requests-to-join community-id] dissoc request-id)}
+            (handle-response response)))
+
+
+(fx/defn accept-request-to-join-pressed
+  {:events [:communities.ui/accept-request-to-join-pressed]}
+  [cofx community-id request-id]
+  {::json-rpc/call [{:method     "wakuext_acceptRequestToJoinCommunity"
+                     :params     [{:id request-id}]
+                     :on-success #(re-frame/dispatch [::request-to-join-accepted community-id request-id %])
+                     :on-error   #(log/error "failed to accept requests-to-join" community-id request-id %)}]})

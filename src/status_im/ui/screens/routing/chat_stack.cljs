@@ -13,6 +13,7 @@
             [status-im.ui.screens.communities.create-channel :as create-channel]
             [status-im.ui.screens.communities.membership :as membership]
             [status-im.ui.screens.communities.members :as members]
+            [status-im.ui.screens.communities.requests-to-join :as requests-to-join]
             [status-im.ui.screens.communities.invite :as invite]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
@@ -47,9 +48,11 @@
      :component community/community}
     {:name      :community-management
      :insets    {:top false}
-     :component community.profile/management}
+     :component community.profile/management-container}
     {:name      :community-members
-     :component members/members}
+     :component members/members-container}
+    {:name      :community-requests-to-join
+     :component requests-to-join/requests-to-join-container}
     {:name      :create-community-channel
      :component create-channel/create-channel}
     {:name      :invite-people-community

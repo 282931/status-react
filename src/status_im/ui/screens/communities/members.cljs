@@ -1,8 +1,11 @@
 (ns status-im.ui.screens.communities.members
   (:require [quo.react-native :as rn]
             [quo.core :as quo]
+            [reagent.core :as reagent]
+            [status-im.ui.components.react :as react]
             [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.components.unviewed-indicator :as unviewed-indicator]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.topbar :as topbar]
             [status-im.i18n :as i18n]
@@ -37,20 +40,19 @@
                         :on-press #(>evt [::communities/member-ban community-id public-key])}]])])
 
 (defn render-member [public-key _ _ {:keys [community-id admin]}]
-  (let [member (or (<sub [:contacts/contact-by-address public-key])
+  (let [member (or (<sub [:contacts/contact-by-identity public-key])
                    {:public-key public-key})]
     [quo/list-item
-     (merge
-      {:title               (multiaccounts/displayed-name member)
-       :accessibility-label :member-item
-       :icon                [chat-icon/contact-icon-contacts-tab
-                             (multiaccounts/displayed-photo member)]
-       :accessory           [quo/button {:on-press            #(>evt [:bottom-sheet/show-sheet
-                                                                      {:content (fn [] [member-sheet member community-id admin])}])
-                                         :type                :icon
-                                         :theme               :icon
-                                         :accessibility-label :menu-option}
-                             :main-icons/more]})]))
+     {:title               (multiaccounts/displayed-name member)
+      :accessibility-label :member-item
+      :icon                [chat-icon/contact-icon-contacts-tab
+                            (multiaccounts/displayed-photo member)]
+      :accessory           [quo/button {:on-press            #(>evt [:bottom-sheet/show-sheet
+                                                                     {:content (fn [] [member-sheet member community-id admin])}])
+                                        :type                :icon
+                                        :theme               :icon
+                                        :accessibility-label :menu-option}
+                            :main-icons/more]}]))
 
 (defn header [community-id]
   [:<>
@@ -61,15 +63,37 @@
                    :on-press            #(>evt [::communities/invite-people-pressed community-id])}]
    [quo/separator {:style {:margin-vertical 8}}]])
 
+
+(defn requests-to-join [community-id]
+  (let [requests (<sub [:communities/requests-to-join-for-community community-id])
+        requests-count (count requests)]
+    [:<>
+     [quo/list-item {:chevron        true
+                     :accessory
+                     [react/view {:flex-direction :row}
+                      (when (pos? requests-count)
+                        [unviewed-indicator/unviewed-indicator requests-count])]
+                     :on-press       #(>evt [:navigate-to :community-requests-to-join {:community-id community-id}])
+                     :title          (i18n/label :t/membership-requests)}]
+     [quo/separator {:style {:margin-vertical 8}}]]))
+
 (defn members [route]
   (let [{:keys [community-id]}     (get-in route [:route :params])
         {:keys [admin members]}    (<sub [:communities/community community-id])]
     [:<>
      [topbar/topbar {:title    (i18n/label :t/community-members-title)
                      :subtitle (str (count members))}]
+     [header community-id]
+     [requests-to-join community-id]
      [rn/flat-list {:data        (keys members)
-                    :header      [header community-id]
                     :render-data {:community-id community-id
                                   :admin        admin}
                     :key-fn      identity
                     :render-fn   render-member}]]))
+
+(defn members-container [route]
+  (reagent/create-class
+   {:display-name "community-members-view"
+    :component-did-mount (fn []
+                           (communities/fetch-requests-to-join! (get-in route [:route :params :community-id])))
+    :reagent-render members}))

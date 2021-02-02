@@ -284,7 +284,11 @@
  :communities/requests-to-join-for-community
  :<- [:communities/requests-to-join]
  (fn [requests [_ community-id]]
-   (get requests community-id {})))
+   (->>
+    (get requests community-id {})
+    vals
+    (filter (fn [{:keys [state]}]
+              (= state constants/request-to-join-pending-state))))))
 
 ;;GENERAL ==============================================================================================================
 
